@@ -1,4 +1,5 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 6.3
+
 import PackageDescription
 
 let package = Package(
@@ -20,15 +21,19 @@ let package = Package(
         .target(
             name: "Logging",
             swiftSettings: [
-                .swiftLanguageVersion(.v6),
+                .defaultIsolation(MainActor.self),
             ]
         ),
         .testTarget(
             name: "LoggingTests",
             dependencies: ["Logging"],
             swiftSettings: [
-                .swiftLanguageVersion(.v6),
+                .defaultIsolation(MainActor.self),
             ]
         ),
+    ],
+    swiftLanguageModes: [
+        .v6,
+        .v5,
     ]
 )
