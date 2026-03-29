@@ -44,43 +44,46 @@ public enum Logging {
     ///
     /// Set this once before any logging call, typically in `AppDelegate` or
     /// the `@main` struct. Defaults to `Bundle.main.bundleIdentifier` when
-    /// running inside an app target; falls back to `"com.unknown"` otherwise
+    /// running inside an app target; falls back to `"com.inesb.swift-logging"` otherwise
     /// (e.g. in pure Swift package tests without a host app).
-    public static var subsystem: String = Bundle.main.bundleIdentifier ?? "com.unknown"
+    /// - Note: Marked `nonisolated(unsafe)` because it is intentionally set once
+    ///   at app launch (before any concurrent logging) and never mutated again.
+    ///   This is safe by convention; Swift 6 strict concurrency cannot verify it statically.
+    public nonisolated(unsafe) static var subsystem: String = Bundle.main.bundleIdentifier ?? "com.inesb.swift-logging"
 
     // MARK: - Core
 
     /// General-purpose logger for events that don't fit a specific category.
-    public static var general: Logger    { Logger(subsystem: subsystem, category: "General") }
+    public static var general: Logger { Logger(subsystem: subsystem, category: "General") }
 
     // MARK: - Networking
 
     /// Network requests, responses, and connectivity events.
-    public static var network: Logger    { Logger(subsystem: subsystem, category: "Network") }
+    public static var network: Logger { Logger(subsystem: subsystem, category: "Network") }
 
     /// API layer: endpoint calls, serialisation, response mapping.
-    public static var api: Logger        { Logger(subsystem: subsystem, category: "API") }
+    public static var api: Logger { Logger(subsystem: subsystem, category: "API") }
 
     // MARK: - User
 
     /// Authentication, sessions, and authorisation flows.
-    public static var auth: Logger       { Logger(subsystem: subsystem, category: "Auth") }
+    public static var auth: Logger { Logger(subsystem: subsystem, category: "Auth") }
 
     /// User profile, preferences, and account events.
-    public static var user: Logger       { Logger(subsystem: subsystem, category: "User") }
+    public static var user: Logger { Logger(subsystem: subsystem, category: "User") }
 
     // MARK: - Data
 
     /// Persistence, database reads/writes, and migrations.
-    public static var data: Logger       { Logger(subsystem: subsystem, category: "Data") }
+    public static var data: Logger { Logger(subsystem: subsystem, category: "Data") }
 
     /// In-memory and on-disk cache operations.
-    public static var cache: Logger      { Logger(subsystem: subsystem, category: "Cache") }
+    public static var cache: Logger { Logger(subsystem: subsystem, category: "Cache") }
 
     // MARK: - UI
 
     /// UI events, view rendering, and user interactions.
-    public static var ui: Logger         { Logger(subsystem: subsystem, category: "UI") }
+    public static var ui: Logger { Logger(subsystem: subsystem, category: "UI") }
 
     /// Navigation: push/pop, sheet presentation, deep links.
     public static var navigation: Logger { Logger(subsystem: subsystem, category: "Navigation") }
@@ -91,5 +94,5 @@ public enum Logging {
     public static var performance: Logger { Logger(subsystem: subsystem, category: "Performance") }
 
     /// App and scene lifecycle events.
-    public static var lifecycle: Logger  { Logger(subsystem: subsystem, category: "Lifecycle") }
+    public static var lifecycle: Logger { Logger(subsystem: subsystem, category: "Lifecycle") }
 }
