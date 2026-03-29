@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "swift-logger",
+    name: "swift-logging",
     platforms: [
         .iOS(.v16),
         .macOS(.v13),
@@ -12,17 +12,17 @@ let package = Package(
     ],
     products: [
         .library(
-            name: "SwiftLogger",
-            targets: ["SwiftLogger"]
+            name: "Logging",
+            targets: ["Logging"]
         ),
     ],
     targets: [
         .target(
-            name: "SwiftLogger"
+            name: "Logging"
         ),
         .testTarget(
-            name: "SwiftLoggerTests",
-            dependencies: ["SwiftLogger"]
+            name: "LoggingTests",
+            dependencies: ["Logging"]
         ),
     ]
 )
