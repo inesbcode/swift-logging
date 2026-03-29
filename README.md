@@ -1,4 +1,4 @@
-# swift-logging
+# Logging
 
 Structured OSLog wrapper for Apple platforms.
 
