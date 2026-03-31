@@ -40,24 +40,32 @@ targets: [
 
 ## Usage
 
+### Setup
+
+Create one `Logging` instance per target, passing your subsystem, then store or pass it where needed:
+
+```swift
+// AppDelegate, @main struct, or dependency container
+let log = Logging(subsystem: "com.mycompany.MyApp")
+```
+
+For quick prototyping the default init uses `"com.inesb.swift-logging"` as the subsystem:
+
+```swift
+let log = Logging()
+```
+
 ### Basic logging
 
 ```swift
 import Logging
 
-Logging.network.info("Request started: \(url, privacy: .public)")
-Logging.auth.debug("Login attempt: \(email, privacy: .private)")
-Logging.data.error("Save failed: \(error)")
-Logging.lifecycle.notice("App moved to background")
-```
+let log = Logging(subsystem: "com.mycompany.MyApp")
 
-### Configuring the subsystem
-
-`Logging.subsystem` defaults to `Bundle.main.bundleIdentifier`, so no setup is needed for app targets. Set it explicitly for framework or package targets:
-
-```swift
-// Before any log call — AppDelegate or @main struct
-Logging.subsystem = "com.mycompany.MyFramework"
+log.network.info("Request started: \(url, privacy: .public)")
+log.auth.debug("Login attempt: \(email, privacy: .private)")
+log.data.error("Save failed: \(error)")
+log.lifecycle.notice("App moved to background")
 ```
 
 ### Privacy annotations
@@ -65,10 +73,10 @@ Logging.subsystem = "com.mycompany.MyFramework"
 OSLog redacts interpolated values in release builds by default. Annotate values explicitly to control what is visible in production logs:
 
 ```swift
-Logging.auth.info("User: \(name, privacy: .private)")            // redacted in release
-Logging.network.info("Status: \(code, privacy: .public)")        // always visible
-Logging.auth.debug("Token: \(token, privacy: .sensitive)")       // always redacted
-Logging.auth.info("ID: \(id, privacy: .private(mask: .hash))")  // hashed for correlation
+log.auth.info("User: \(name, privacy: .private)")            // redacted in release
+log.network.info("Status: \(code, privacy: .public)")        // always visible
+log.auth.debug("Token: \(token, privacy: .sensitive)")       // always redacted
+log.auth.info("ID: \(id, privacy: .private(mask: .hash))")  // hashed for correlation
 ```
 
 ## Log levels
@@ -84,19 +92,19 @@ Logging.auth.info("ID: \(id, privacy: .private(mask: .hash))")  // hashed for co
 
 ## Categories
 
-| Property               | Intended use                              |
-|------------------------|-------------------------------------------|
-| `Logging.general`      | Events that don't fit another category    |
-| `Logging.network`      | Requests, responses, connectivity         |
-| `Logging.api`          | Endpoint calls, serialisation             |
-| `Logging.auth`         | Login, logout, session management         |
-| `Logging.user`         | Profile, preferences, account events      |
-| `Logging.data`         | Persistence, migrations                   |
-| `Logging.cache`        | In-memory and on-disk cache operations    |
-| `Logging.ui`           | View rendering, user interactions         |
-| `Logging.navigation`   | Push/pop, sheets, deep links              |
-| `Logging.performance`  | Measurements, profiling markers           |
-| `Logging.lifecycle`    | App and scene lifecycle events            |
+| Property          | Intended use                              |
+|-------------------|-------------------------------------------|
+| `.general`        | Events that don't fit another category    |
+| `.network`        | Requests, responses, connectivity         |
+| `.api`            | Endpoint calls, serialisation             |
+| `.auth`           | Login, logout, session management         |
+| `.user`           | Profile, preferences, account events      |
+| `.data`           | Persistence, migrations                   |
+| `.cache`          | In-memory and on-disk cache operations    |
+| `.ui`             | View rendering, user interactions         |
+| `.navigation`     | Push/pop, sheets, deep links              |
+| `.performance`    | Measurements, profiling markers           |
+| `.lifecycle`      | App and scene lifecycle events            |
 
 ## Viewing logs
 
