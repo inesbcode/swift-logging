@@ -56,7 +56,7 @@ import OSLog
 ///
 /// - Note: All members are `nonisolated` so they can be called from any isolation context
 ///   without `await`, regardless of the module's default `@MainActor` isolation.
-public enum Logging {
+public struct Logging {
 
     // MARK: - Subsystem
 
@@ -73,8 +73,11 @@ public enum Logging {
     /// - Note: Marked `nonisolated(unsafe)` because it is intentionally written once at
     ///   launch before any concurrent logging begins. Swift 6 strict concurrency cannot
     ///   verify this statically, but the usage pattern makes it safe by convention.
-    public nonisolated(unsafe) static var subsystem: String =
-        Bundle.main.bundleIdentifier ?? "com.inesb.swift-logging"
+    private let subsystem: String
+    
+    public nonisolated init(subsystem: String = "com.inesb.swift-logging") {
+        self.subsystem = subsystem
+    }
 
     // MARK: - Core
 
@@ -82,67 +85,67 @@ public enum Logging {
     ///
     /// Use this as a catch-all during early development, then migrate call sites to a
     /// dedicated category as the codebase grows.
-    public nonisolated static var general: Logger {
+    public nonisolated var general: Logger {
         Logger(subsystem: subsystem, category: "General")
     }
 
     // MARK: - Networking
 
     /// Logger for network-layer events: requests, responses, retries, and connectivity changes.
-    public nonisolated static var network: Logger {
+    public nonisolated var network: Logger {
         Logger(subsystem: subsystem, category: "Network")
     }
 
     /// Logger for API-layer events: endpoint calls, JSON serialisation, and response mapping.
-    public nonisolated static var api: Logger {
+    public nonisolated var api: Logger {
         Logger(subsystem: subsystem, category: "API")
     }
 
     // MARK: - User
 
     /// Logger for authentication and authorisation events: login, logout, and session management.
-    public nonisolated static var auth: Logger {
+    public nonisolated var auth: Logger {
         Logger(subsystem: subsystem, category: "Auth")
     }
 
     /// Logger for user-account events: profile changes, preferences, and account state.
-    public nonisolated static var user: Logger {
+    public nonisolated var user: Logger {
         Logger(subsystem: subsystem, category: "User")
     }
 
     // MARK: - Data
 
     /// Logger for persistence events: database reads and writes, migrations, and sync.
-    public nonisolated static var data: Logger {
+    public nonisolated var data: Logger {
         Logger(subsystem: subsystem, category: "Data")
     }
 
     /// Logger for cache events: hits, misses, evictions, and invalidations.
-    public nonisolated static var cache: Logger {
+    public nonisolated var cache: Logger {
         Logger(subsystem: subsystem, category: "Cache")
     }
 
     // MARK: - UI
 
     /// Logger for UI events: view rendering, user interactions, and state changes.
-    public nonisolated static var ui: Logger {
+    public nonisolated var ui: Logger {
         Logger(subsystem: subsystem, category: "UI")
     }
 
     /// Logger for navigation events: push, pop, sheet presentation, and deep-link routing.
-    public nonisolated static var navigation: Logger {
+    public nonisolated var navigation: Logger {
         Logger(subsystem: subsystem, category: "Navigation")
     }
 
     // MARK: - System
 
     /// Logger for performance measurements: timing, memory, and profiling markers.
-    public nonisolated static var performance: Logger {
+    public nonisolated var performance: Logger {
         Logger(subsystem: subsystem, category: "Performance")
     }
 
     /// Logger for app and scene lifecycle events: foreground, background, and termination.
-    public nonisolated static var lifecycle: Logger {
+    public nonisolated var lifecycle: Logger {
         Logger(subsystem: subsystem, category: "Lifecycle")
     }
 }

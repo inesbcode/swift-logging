@@ -1,8 +1,8 @@
 # swift-logging
 
-Lightweight OSLog wrapper for Apple platforms. Provides a single `enum Logging` namespace
-with category-scoped `Logger` instances for structured, filterable logging across apps and
-Swift packages.
+Lightweight OSLog wrapper for Apple platforms. Provides a `struct Logging` that is
+instantiated with a subsystem and vends category-scoped `Logger` instances for structured,
+filterable logging across apps and Swift packages.
 
 ## Project structure
 
@@ -13,10 +13,18 @@ Tests/     – unit tests (LoggingTests target)
 
 ## How it works
 
-`Logging` is an uninitializable enum used as a namespace. Each static computed property
-returns a fresh `Logger(subsystem:category:)` instance scoped to a predefined category.
+`Logging` is a `struct` instantiated with a subsystem string (defaults to
+`"com.inesb.swift-logging"`). Each computed property returns a fresh
+`Logger(subsystem:category:)` instance scoped to a predefined category.
 All members are `nonisolated` so they are callable from any isolation context without `await`.
-`Logging.subsystem` is set once at app launch and picked up by every logger on first use.
+The subsystem is injected at init time and stored as a `private let`.
+
+Typical usage — create one instance per app target and pass or store it where needed:
+
+```swift
+let log = Logging(subsystem: Bundle.main.bundleIdentifier ?? "com.mycompany.MyApp")
+log.network.info("Request started")
+```
 
 ## Swift 6 notes
 
@@ -24,15 +32,14 @@ All members are `nonisolated` so they are callable from any isolation context wi
   target is implicitly `@MainActor` unless marked otherwise.
 - All `Logging` properties are `nonisolated` — they can be called from any isolation context
   without `await`. This is mandatory for a logging library.
-- `Logging.subsystem` uses `nonisolated(unsafe)` because it is set once before any concurrent
-  logging begins. Swift 6 cannot verify this statically, but the usage pattern is safe.
+- The `init` is also `nonisolated` so `Logging` can be created from any isolation context.
 
 ## Documentation
 
 All public declarations must have a doc comment (`///`).
-The top-level `enum Logging` doc comment must include:
+The top-level `struct Logging` doc comment must include:
 - One-line summary
-- Setup example
+- Setup / instantiation example
 - Basic usage example
 - Privacy annotations guide
 - Log levels table
@@ -43,24 +50,26 @@ they cover.
 
 ## Adding a category
 
-Add a `public nonisolated static var` computed property in the appropriate `MARK` section,
+Add a `public nonisolated var` computed property in the appropriate `MARK` section,
 following the existing pattern:
 
 ```swift
 /// Logger for <description of events>.
-public nonisolated static var myCategory: Logger {
+public nonisolated var myCategory: Logger {
     Logger(subsystem: subsystem, category: "MyCategory")
 }
 ```
 
-Then add `_ = Logging.myCategory` to the `predefinedCategories` test in `LoggingTests.swift`.
+Then add `_ = logging.myCategory` to the `predefinedCategories` test in `LoggingTests.swift`
+(where `logging` is the `Logging()` instance created at the top of the test).
 
 ## Key decisions (do not reverse without discussion)
 
 - **Single file.** All public API lives in `Sources/Logging/Logging.swift`.
-- **`enum` namespace.** `Logging` is uninitializable. Do not convert it to a struct, class, or actor.
-- **Computed `static var`, not `static let`.** Ensures `subsystem` changes before first use are
-  reflected in every logger. Do not convert to `static let`.
+- **`struct` with init.** `Logging` is instantiated with a subsystem. Do not convert it back
+  to an enum or make members static.
+- **Computed `var`, not `let`.** Properties are computed so the subsystem stored at init time
+  is always used. Do not convert to stored `let` properties.
 - **No dependencies.** The package must remain dependency-free.
 
 ## Commands

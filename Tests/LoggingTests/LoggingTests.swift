@@ -5,45 +5,45 @@ import OSLog
 @Suite("Logging")
 struct LoggingTests {
 
+    let logging = Logging()
+
     @Test("all predefined category loggers are accessible without crashing")
     func predefinedCategories() {
-        _ = Logging.general
-        _ = Logging.network
-        _ = Logging.api
-        _ = Logging.auth
-        _ = Logging.user
-        _ = Logging.data
-        _ = Logging.cache
-        _ = Logging.ui
-        _ = Logging.navigation
-        _ = Logging.performance
-        _ = Logging.lifecycle
+        _ = logging.general
+        _ = logging.network
+        _ = logging.api
+        _ = logging.auth
+        _ = logging.user
+        _ = logging.data
+        _ = logging.cache
+        _ = logging.ui
+        _ = logging.navigation
+        _ = logging.performance
+        _ = logging.lifecycle
     }
 
-    @Test("subsystem can be changed before first log call")
+    @Test("subsystem is reflected in the logger when passed at init")
     func subsystemIsConfigurable() {
-        let previous = Logging.subsystem
-        Logging.subsystem = "com.test.custom"
-        _ = Logging.general
-        Logging.subsystem = previous
+        let custom = Logging(subsystem: "com.test.custom")
+        _ = custom.general
     }
 
     @Test("all log levels execute without crashing")
     func logLevels() {
-        Logging.general.debug("debug")
-        Logging.general.info("info")
-        Logging.general.notice("notice")
-        Logging.general.warning("warning")
-        Logging.general.error("error")
-        Logging.general.fault("fault")
+        logging.general.debug("debug")
+        logging.general.info("info")
+        logging.general.notice("notice")
+        logging.general.warning("warning")
+        logging.general.error("error")
+        logging.general.fault("fault")
     }
 
     @Test("loggers are safe to call from concurrent tasks")
     func concurrencySafe() async {
         await withTaskGroup(of: Void.self) { group in
-            group.addTask { Logging.network.info("concurrent network") }
-            group.addTask { Logging.auth.info("concurrent auth") }
-            group.addTask { Logging.data.info("concurrent data") }
+            group.addTask { logging.network.info("concurrent network") }
+            group.addTask { logging.auth.info("concurrent auth") }
+            group.addTask { logging.data.info("concurrent data") }
         }
     }
 }
