@@ -48,6 +48,22 @@ The top-level `struct Logging` doc comment must include:
 Individual category properties require only a one-line summary describing the kind of events
 they cover.
 
+## Test conventions
+
+Each test file contains exactly one `@Suite` and the suite name must match the
+production type under test (e.g. `Logging` → `LoggingTests`).
+
+Test files live flat inside `Tests/LoggingTests/` and mirror the source files
+in `Sources/Logging/`:
+
+```
+Sources/Logging/Logging.swift  → Tests/LoggingTests/LoggingTests.swift
+```
+
+Never put multiple suites in one file, and never group tests for different types
+into the same suite even if they exercise related concerns — merge those into the
+single suite for that type instead.
+
 ## Adding a category
 
 Add a `public nonisolated var` computed property in the appropriate `MARK` section,
